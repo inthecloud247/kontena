@@ -65,6 +65,7 @@ module Kontena::Cli::Services
     # Exits if exec returns with non-zero
     # @param [Docker::Container] container
     def exec_container(container)
+      exit_status = nil
       if !silent? && (verbose? || all?)
         spinner "Executing command on #{container['name']}" do
           exit_status = normal_exec(container)
