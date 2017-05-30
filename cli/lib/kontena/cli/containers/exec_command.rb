@@ -19,12 +19,15 @@ module Kontena::Cli::Containers
       token = require_token
       cmd = JSON.dump({cmd: cmd_list})
       base = self
-      ws = connect(token)
+      ws = connect(ws_url("#{current_grid}/#{container_id}"), token)
       ws.on :message do |msg|
         base.handle_message(msg)
       end
       ws.on :open do
         ws.send(cmd)
+      end
+      ws.on :error do |e|
+        exit_with_error('fuck')
       end
       ws.on :close do |e|
         exit 1
@@ -35,20 +38,6 @@ module Kontena::Cli::Containers
       else 
         sleep
       end
-    end
-
-    # @param [String] token
-    # @return [WebSocket::Client::Simple]
-    def connect(token)
-      url = "#{require_current_master.url.sub('http', 'ws')}/v1/containers/#{current_grid}/#{container_id}/exec?"
-      url << 'interactive=true&' if interactive?
-      url << 'shell=true&' if shell?
-      WebSocket::Client::Simple.connect(url, {
-        headers: {
-          'Authorization' => "Bearer #{token.access_token}",
-          'Accept' => 'application/json'
-        }
-      })
     end
   end
 end

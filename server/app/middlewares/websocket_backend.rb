@@ -37,7 +37,7 @@ class WebsocketBackend
   end
 
   def call(env)
-    if env['REQUEST_PATH'].match(/^(\/)+$/) && Faye::WebSocket.websocket?(env)
+    if env['REQUEST_PATH'] == '/' && Faye::WebSocket.websocket?(env)
       req = Rack::Request.new(env)
       ws = Faye::WebSocket.new(env)
 
